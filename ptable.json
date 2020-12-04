@@ -1,0 +1,72 @@
+{
+	"processes": [
+		{
+			"pid": 100,
+			"ppid": 1, 
+			"cpid": [ 200, 300 ],
+			"cpuState": {
+				"r0": 1,
+				"r1": 2,
+				"r2": 4,
+				"r3": 8,
+				"sp": 128,
+				"pc": 256
+			},
+			"runState": "ready",
+			"cpuTime": 0,
+			"timeInSystem": 0,
+			"priority": 1
+		}
+		{
+			"pid": 200,
+			"ppid": 100, 
+			"cpid": [ ],
+			"cpuState": {
+				"r0": 10,
+				"r1": 20,
+				"r2": 40,
+				"r3": 80,
+				"sp": 1280,
+				"pc": 2560
+			},
+			"runState": "ready",
+			"cpuTime": 0,
+			"timeInSystem": 0,
+			"priority": 1
+		}
+		{
+			"pid": 300,
+			"ppid": 100, 
+			"cpid": [ 400 ],
+			"cpuState": {
+				"r0": 100,
+				"r1": 200,
+				"r2": 400,
+				"r3": 800,
+				"sp": 12800,
+				"pc": 25600
+			}, 
+			"runState": "ready", 
+			"cpuTime": 0,
+			"timeInSystem": 0,
+			"priority": 1
+		}
+		{
+			"pid": 400,
+			"ppid": 300, 
+			"cpid": [ ],
+			"cpuState": {
+				"r0": 1000,
+				"r1": 2000,
+				"r2": 4000,
+				"r3": 8000,
+				"sp": 128000,
+				"pc": 256000
+			}, 
+			"runState": "blocked", 
+			"cpuTime": 0,
+			"timeInSystem": 0,
+			"priority": 1
+		}
+	]
+}
