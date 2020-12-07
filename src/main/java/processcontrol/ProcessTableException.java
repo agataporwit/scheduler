@@ -1,5 +1,5 @@
 
-package main.java.processcontrol;
+package processcontrol;
 
 /**
  *

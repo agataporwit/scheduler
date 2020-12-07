@@ -1,11 +1,10 @@
-package main.java.scheduling;
+package scheduling;
 
 import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import main.java.processcontrol.Pcb;
-import main.java.processcontrol.ProcessTable;
+import processcontrol.Pcb;
 
 /**
  *
@@ -77,12 +76,13 @@ public class Scheduler {
 
         ready = new LinkedList<>();              // waiting to run
         for (int i = 0; i < 4; i++) {
-            ready.add(new LinkedList<Pcb>());    // individual priority lists
+            ready.add(new LinkedList<>());    // individual priority lists
         }
 
         blocked = new HashMap<>();         // waiting for I/O
         suspended = new LinkedList<>();     // single-stepping
-        terminated = new LinkedList<>();    // waiting to exit 
+        terminated = new LinkedList<>();    // waiting to exit
+        running = null; // nothing is running
     }
 
     ///////////////////////////////////////////////////////////
@@ -97,33 +97,67 @@ public class Scheduler {
 
     public void Activate(Pcb pcb) {
         // TODO - move process from the new state to the ready state
+        if(!newProcess.contains(pcb))
+            throw new IllegalArgumentException("Requested PCB [" + pcb.getPid() + "] does not exist");
+        Pcb toReady = newProcess.remove(newProcess.indexOf(pcb));
+        addToReady(toReady);
     }
 
     public void Schedule() {
         // TODO - move running process to the ready state, 
         // move a process from the ready state to running
+
+        // save currently running process to the correct priority ready list
+        if(running != null) {
+            addToReady(running);
+            running = null;
+        }
+
+        // find and run the next process
+        running = getNextReady();
     }
 
     public void RequestResource(int resourceId) {
         // TODO - move the running process to the blocked state,
         // move a ready process to the running state
+        if(running != null) {
+            addToBlocked(resourceId, running);
+        }
+
+        running = null;
     }
 
     public void ReleaseResource(int resourceId) {
         // TODO - choose a blocked process and move it to the ready state
+        Pcb toReady = getNextBlockedForResource(resourceId);
+        addToReady(toReady);
     }
 
     public void Suspend(Pcb pcb) {
         // TODO - move the running process to the suspended state, 
         // move a ready process to the running state
+
+        if(running != null) {
+            suspended.add(running);
+            running = null;
+        }
+        running = getNextReady();
     }
 
     public void Reactivate(Pcb pcb) {
         // TODO - move process from suspended to ready state
+        if(!suspended.isEmpty()) {
+            Pcb toReady = suspended.remove(0);
+            addToReady(toReady);
+        }
     }
 
     public void Exit() {
         // TODO - move the running process to the terminated state
+        if(running != null) {
+            terminated.add(running);
+            running = null;
+        }
     }
 
     ///////////////////////////////////////////////////////////
@@ -183,5 +217,49 @@ public class Scheduler {
         sb.append("Terminated:").append(terminated).append("\n");
 
         return sb.toString();
+    }
+
+    // given a PCB, add it to the correct priority ready list
+    private void addToReady(Pcb pcb) {
+        int priority = (int)pcb.getPriority();
+        if(priority > 3 || priority < 0)
+            throw new IllegalArgumentException("Priority [" + priority + "] is outside of the allowed range of 0-3");
+        ready.get(priority).add(pcb);
+    }
+
+    // find and return the next ready process to run
+    private Pcb getNextReady() {
+        Pcb nextReady = null;
+        for(List<Pcb> list : ready) {
+            if(!list.isEmpty()) {
+                nextReady = list.remove(0);
+                break;
+            }
+        }
+
+        return nextReady;
+    }
+
+    private void addToBlocked(int resourceId, Pcb pcb) {
+        Integer key = resourceId;
+        if(!blocked.containsKey(key)) {
+            blocked.put(key, new LinkedList<>());
+        }
+
+        List<Pcb> resourceList = blocked.get(key);
+        resourceList.add(pcb);
+    }
+
+    private Pcb getNextBlockedForResource(int resourceId) {
+        Integer key = resourceId;
+        Pcb nextBlocked = null;
+
+        if(blocked.containsKey(key)) {
+            List<Pcb> resourceList = blocked.get(key);
+            if(!resourceList.isEmpty())
+                nextBlocked = resourceList.remove(0);
+        }
+
+        return nextBlocked;
     }
 }
