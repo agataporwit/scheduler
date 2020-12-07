@@ -1,11 +1,11 @@
-package main.java.os;
+package os;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import main.java.processcontrol.Pcb;
-import main.java.processcontrol.ProcessTable;
-import main.java.processcontrol.ProcessTableException;
-import main.java.scheduling.Scheduler;
+import processcontrol.Pcb;
+import processcontrol.ProcessTable;
+import processcontrol.ProcessTableException;
+import scheduling.Scheduler;
 
 /**
  *
